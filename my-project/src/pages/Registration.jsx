@@ -21,7 +21,7 @@ export default function Registration() {
       if (res.data.success) {
         toast.success(res.data?.message || "Registration successful!");
         reset();
-        // navigate("/login");
+        navigate("/login");
       } else {
         toast.error(res.data?.message || "Something went wrong.");
       }
