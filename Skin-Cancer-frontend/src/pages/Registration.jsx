@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { FaEyeSlash } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import userSchema from "../validators/userRegistartion.js";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast, { Toaster } from "react-hot-toast";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import Navbar from "../components/Navbar.jsx";
 
 export default function Registration() {
   const { register, handleSubmit, formState, reset } = useForm({
@@ -37,48 +37,49 @@ export default function Registration() {
 
   return (
     <>
-
-      <section className="bg-gray-50 dark:bg-gray-900">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <a href="#" className="flex text-left items-start mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+      <Navbar />
+      <section className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200">
+        <div className="flex flex-col items-center justify-center px-6 py-10 mx-auto md:h-screen">
+          {/* <h2 className="text-gray-800 text-3xl font-semibold mb-6 text-center">
             Create Account
-          </a>
-          <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+          </h2> */}
+          <div className="w-full bg-white rounded-xl shadow-lg md:mt-0 sm:max-w-md xl:p-0  ">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center">
+              <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900  text-center">
                 Register
               </h1>
-              <form className="space-y-4 md:space-y-6"
-                onSubmit={handleSubmit(onSubmit)}
-              >
+              <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                  <label htmlFor="Name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Name:
+                  <label htmlFor="Name" className="block mb-2 text-sm font-medium text-gray-900 ">
+                    Name
                   </label>
                   <input
                     type="text"
                     name="userName"
                     id="userName"
                     placeholder="Enter Your Name"
-
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                      focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                      "
                     {...register("userName")}
                   />
                   <p className="text-xs text-red-600 font-semibold h-4">
                     {formState.errors.userName?.message}
                   </p>
                 </div>
+
                 <div>
-                  <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
-                    Your email
+                  <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 ">
+                    Email
                   </label>
                   <input
                     type="email"
                     name="email"
                     id="email"
                     placeholder="name@company.com"
-
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                      focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                         "
                     {...register("email")}
                   />
                   <p className="text-xs text-red-600 font-semibold h-4">
@@ -87,10 +88,7 @@ export default function Registration() {
                 </div>
 
                 <div className="relative">
-                  <label
-                    htmlFor="password"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
+                  <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 ">
                     Password
                   </label>
                   <input
@@ -99,14 +97,13 @@ export default function Registration() {
                     id="password"
                     placeholder="••••••••"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-              focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
-              dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-              dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                        "
                     {...register("password")}
                   />
                   <span
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-[50px] text-gray-600 dark:text-gray-300 cursor-pointer"
+                    className="absolute right-3 top-[40px] text-gray-600  cursor-pointer"
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </span>
@@ -116,42 +113,36 @@ export default function Registration() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="flex items-center h-5">
-                    <input
-                      id="terms"
-                      aria-describedby="terms"
-                      type="checkbox"
-                      required
-                      className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                    />
-                  </div>
-                  <div className="ml-3 text-sm">
-                    <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">
-                      I accept the{" "}
-                      <a className="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">
-                        Terms and Conditions
-                      </a>
-                    </label>
-                  </div>
+                  <input
+                    id="terms"
+                    type="checkbox"
+                    required
+                    className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-blue-400 
+                    "
+                  />
+                  <label htmlFor="terms" className="ml-2 text-sm text-gray-500 ">
+                    I accept the <a href="#" className="font-medium text-blue-500 hover:underline">Terms and Conditions</a>
+                  </label>
                 </div>
+
                 <button
                   type="submit"
-                  className="w-full text-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                  className="bg-[#2563EB] hover:opacity-90 w-full text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition"
                 >
                   Sign Up
                 </button>
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                <p className="text-sm font-light text-gray-500  text-center">
                   Already have an account?{" "}
-                  <a href="login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
+                  <Link to="/login" className="font-medium text-blue-500 hover:underline">
                     Login here
-                  </a>
+                  </Link>
                 </p>
               </form>
             </div>
           </div>
         </div>
       </section>
-      <Toaster />
+    <Toaster />
     </>
   );
 }

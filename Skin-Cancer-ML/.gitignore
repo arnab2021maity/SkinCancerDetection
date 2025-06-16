@@ -1,0 +1,40 @@
+# === Python cache files ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# === Virtual environment ===
+venv/
+.env/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === Jupyter Notebook checkpoints ===
+.ipynb_checkpoints/
+
+# === Model & data files ===
+*.h5
+*.pkl
+*.csv
+*.xlsx
+
+# === Log files ===
+*.log
+
+# === Environment/IDE ===
+.vscode/
+.idea/
+
+# === Flask-related ===
+instance/
+*.db
+*.sqlite3
+
+# === Token or secret files ===
+.env
+.env.*
+
+# === pip packages ===
+pip-log.txt
