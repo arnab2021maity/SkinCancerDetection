@@ -41,8 +41,8 @@ export default function Navbar() {
               <img src={logo} className="w-14 rounded-2xl" alt="logo" srcset="" />
               <div className="flex flex-col">
 
-              <span className="text-2xl font-semibold text-white">AI Dermatologist</span>
-              <p className="text-gray-400 text-sm">Skin Cancer</p>
+              <span className="text-2xl font-semibold text-white">DermaIntell</span>
+              <p className="text-gray-400 text-sm">Skin Cancer Detector</p>
               </div>
             </div>
           </Link>
