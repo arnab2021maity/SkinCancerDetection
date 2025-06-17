@@ -18,9 +18,6 @@ Thumbs.db
 # === Model & data files ===
 *.h5
 *.pkl
-*.csv
-*.xlsx
-
 # === Log files ===
 *.log
 

@@ -11,7 +11,7 @@ const userRoutes = express.Router();
 
 userRoutes.post("/register",validate(signupUser), registerUser);
 userRoutes.post("/login",loginUser)
-userRoutes.post("/logout", authMiddleware, isLoggedIn, logoutUser);
+userRoutes.post("/logout", authMiddleware, logoutUser);
 
 
 export default userRoutes;

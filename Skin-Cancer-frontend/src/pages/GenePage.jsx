@@ -45,8 +45,8 @@ const GenePage = () => {
 
     const renderResult = () => (
         <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <h3 className="text-lg font-semibold text-blue-800 mb-2">Prediction Result:</h3>
-            <p><strong>Label:</strong> {result.label}</p>
+            <h3 className="text-lg font-semibold text-blue-800 mb-2">Prediction:</h3>
+            <p><strong>Result:</strong> {result.label}</p>
             <p><strong>Confidence:</strong> {result.confidence}</p>
             {result.warning && (
                 <p className="text-yellow-700 mt-2">⚠️ {result.warning}</p>

@@ -10,7 +10,7 @@ export default function Hero() {
       className="w-full h-screen bg-cover bg-center"
       style={{ backgroundImage: `url(${home})` }}
     >
-      <div className="flex flex-col h-full bg-black bg-opacity-60 px-4 sm:px-8 md:px-12 lg:px-20 py-10 justify-center">
+      <div className="flex flex-col h-full  bg-opacity-0 px-4 sm:px-8 md:px-12 lg:px-20 py-10 justify-center">
         <h1 className="text-white text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">
           Detect Skin Cancer Early.
         </h1>

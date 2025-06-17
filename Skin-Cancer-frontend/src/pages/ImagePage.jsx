@@ -110,8 +110,8 @@ const ImagePage = () => {
 
                     {result && (
                         <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <h3 className="text-lg font-semibold text-blue-800 mb-2">Prediction Result:</h3>
-                            <p><strong>Label:</strong> {result.label || result.prediction}</p>
+                            <h3 className="text-lg font-semibold text-blue-800 mb-2">Prediction:</h3>
+                            <p><strong>Result:</strong> {result.label || result.prediction}</p>
                             <p>
                                 <strong>Confidence:</strong>{" "}
                                 <span className={`font-semibold ${result.confidence >= 0.8
@@ -123,19 +123,7 @@ const ImagePage = () => {
                                     {result.confidence}
                                 </span>
                             </p>
-                            {result.top_3_predictions && (
-                                <div className="mt-2">
-                                    <p className="font-semibold text-gray-700">Top 3 Predictions:</p>
-                                    <ul className="list-disc list-inside text-sm text-gray-600">
-                                        {Object.entries(result.top_3_predictions).map(([label, conf]) => (
-                                            <li key={label}><strong>{label}:</strong> {conf}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                            {result.entropy_score && (
-                                <p className="mt-2"><strong>Entropy:</strong> {result.entropy_score}</p>
-                            )}
+
                             {result.warnings && result.warnings.map((w, idx) => (
                                 <p key={idx} className="text-yellow-700 mt-2">⚠️ {w}</p>
                             ))}

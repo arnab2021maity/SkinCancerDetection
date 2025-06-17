@@ -4,7 +4,8 @@ import { statusCode } from "../config/constant.js";
 
 export const logoutUser = async (req, res) => {
   try {
-    const userId = req.user_id; // extracted from verified token
+    const userId = req.userId; // extracted from verified token
+    console.log("user Id",userId);
 
     const result = await sessionSchema.findOneAndDelete({ userId });
 

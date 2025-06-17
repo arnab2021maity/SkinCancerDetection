@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logo from '../assets/logo.png';
 import axios from "axios";
 
 export default function Navbar() {
@@ -36,9 +37,13 @@ export default function Navbar() {
       <nav className="bg-slate-800 border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between p-4 mx-auto px-10">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="flex flex-col">
+            <div className="flex items-center gap-5">
+              <img src={logo} className="w-14 rounded-2xl" alt="logo" srcset="" />
+              <div className="flex flex-col">
+
               <span className="text-2xl font-semibold text-white">AI Dermatologist</span>
               <p className="text-gray-400 text-sm">Skin Cancer</p>
+              </div>
             </div>
           </Link>
 

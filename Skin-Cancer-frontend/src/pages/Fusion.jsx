@@ -125,7 +125,7 @@ const Fusion = () => {
                     {result && (
                         <div className="mt-6 bg-purple-50 p-4 rounded-lg border border-purple-200 animate-fade-in">
                             <h3 className="text-lg font-semibold text-purple-800 mb-2">Fusion Result:</h3>
-                            <p><strong>Final Decision:</strong> {result.final_decision}</p>
+                            <h2 className="text-lg text-center bg-purple-300 rounded-md py-2 m-4"><strong>Final Decision:</strong> {result.final_decision}</h2>
                             <p><strong>Trusted Model:</strong> {result.trusted_model}</p>
 
                             <p><strong>Gene Prediction:</strong> {result.gene_prediction} ({result.gene_confidence})</p>

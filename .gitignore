@@ -2,9 +2,7 @@
 Skin-Cancer-ML/*.h5
 Skin-Cancer-ML/*.pkl
 
-# Ignore datasets
-Skin-Cancer-ML/*.csv
-Skin-Cancer-ML/*.xlsx
+
 
 # Ignore Python cache
 Skin-Cancer-ML/__pycache__/
