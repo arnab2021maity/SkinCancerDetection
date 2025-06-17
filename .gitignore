@@ -12,6 +12,7 @@ Skin-Cancer-ML/__pycache__/
 
 # Ignore virtual environment
 Skin-Cancer-ML/venv/
+Skin-Cancer-ML/venv310/
 
 # Ignore secrets
 .env
