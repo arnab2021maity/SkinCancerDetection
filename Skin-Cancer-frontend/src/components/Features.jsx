@@ -10,7 +10,7 @@ const features = [
     desc: "Submit gene expression files to get deeper insight."
   },
   {
-    title: "Fusion Model",
+    title: "Gene and Image Model Analysis",
     desc: "Combine both data types for maximum accuracy."
   },
   {
@@ -24,7 +24,7 @@ export default function FeaturesSection() {
     <section className="py-16 bg-white text-gray-800" id="features">
       <div className="max-w-6xl mx-auto px-6">
         <h2 className="text-3xl font-bold text-center mb-10">Platform Features</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 cursor-pointer">
           {features.map((feature, index) => (
             <div
               key={index}

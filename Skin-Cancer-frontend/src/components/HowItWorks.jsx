@@ -8,7 +8,7 @@ return (
           How Our AI Detection Works
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 cursor-pointer">
           {/* Step 1 */}
           <div className="bg-white p-8 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 text-center border-t-4 border-blue-500">
             <h3 className="text-2xl font-bold text-blue-700 mb-4">Step 1: Choose Detection Type</h3>
