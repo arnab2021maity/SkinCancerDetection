@@ -2,34 +2,30 @@ import sessionSchema from "../models/sessionSchema.js";
 
 export const isLoggedIn = async (req, res, next) => {
   try {
+    const userId = req.userId;
 
-    let session;
-    
-    const _id = req.body?._id; 
-    
-    if (!_id) {
-
-      const userId = req.userId;
-       session = await sessionSchema.findOne({ userId });
-    }
-    else {
-        
-        session = await sessionSchema.findOne({ userId: _id });
-    }
-    if (session) next();
-    else {
-      return res.status(404).send({
+    if (!userId) {
+      return res.status(401).json({
         success: false,
-        message: "Session not found",
+        message: "Unauthorized: User ID not found in request",
       });
     }
+
+    const session = await sessionSchema.findOne({ userId });
+
+    if (!session) {
+      return res.status(401).json({
+        success: false,
+        message: "Session not found or expired. Please login again.",
+      });
+    }
+
+    next(); // session valid
   } catch (err) {
-    res.status(500).send({
+    return res.status(500).json({
       success: false,
       error: err.message,
-      message: "error in session validation",
+      message: "Error in session validation",
     });
   }
 };
-
-
