@@ -5,12 +5,9 @@ import numpy as np
 from PIL import Image
 import pandas as pd
 import pickle
-import cv2
 import logging
-from fusion import fuzzy_fuse
+from fusion import fuzzy_multimodal_classification
 from flask_cors import CORS
-
-
 
 # Setup
 logging.basicConfig(level=logging.INFO)
@@ -43,10 +40,16 @@ def preprocess_image(image, target_size=(128, 128)):
     image_array = np.expand_dims(image_array, axis=0)
     return image_array
 
+def get_top3_predictions(predictions, labels):
+    """Extract top-3 predictions with labels and confidences"""
+    top_3_indices = np.argsort(predictions)[-3:][::-1]
+    top_3 = [(labels[i], round(float(predictions[i]), 4)) for i in top_3_indices]
+    return top_3
+
 # Routes
 @app.route('/')
 def home():
-    return "🔥 Skin Cancer Prediction API (Gene + Image) is running!"
+    return "🔥 Skin Cancer Prediction API (Gene + Image + Fuzzy Fusion) is running!"
 
 @app.route('/predict/image', methods=['POST'])
 def predict_image():
@@ -130,7 +133,7 @@ def predict_fused():
         if 'image' not in request.files or 'gene' not in request.files:
             return jsonify({'error': 'Both image and gene files are required'}), 400
 
-        # Gene Prediction
+        # Gene Prediction - Get Top-3
         gene_file = request.files['gene']
         df = pd.read_excel(gene_file, header=None)
         if df.shape[0] > df.shape[1]:
@@ -144,43 +147,137 @@ def predict_fused():
 
         X_scaled = scaler.transform(X)
         gene_pred = gene_model.predict(X_scaled, verbose=0)[0]
-        gene_conf = float(np.max(gene_pred))
-        gene_label = encoder.inverse_transform([np.argmax(gene_pred)])[0]
+        
+        # Get gene labels from encoder
+        gene_labels = encoder.classes_.tolist()
+        top3_numeric = get_top3_predictions(gene_pred, gene_labels)
 
-        # Image Prediction
+        # Image Prediction - Get Top-3
         image = Image.open(request.files['image']).convert("RGB")
         image_array = preprocess_image(image)
         image_pred = image_model.predict(image_array, verbose=0)[0]
-        image_conf = float(np.max(image_pred))
-        image_label = class_labels[np.argmax(image_pred)]
+        
+        if not np.isclose(np.sum(image_pred), 1.0, atol=1e-3):
+            image_pred = tf.nn.softmax(image_pred).numpy()
+        
+        top3_image = get_top3_predictions(image_pred, class_labels)
 
-        # Fuzzy Fusion
-        fused_conf = fuzzy_fuse(image_conf, gene_conf)
+        # Calculate entropy for reliability check
+        entropy = -np.sum(image_pred * np.log(image_pred + 1e-10))
+        max_entropy = np.log(len(class_labels))
+        normalized_entropy = entropy / max_entropy
 
-        if image_conf > gene_conf:
-            final_decision = image_label
-            trusted_model = "Image"
-        elif gene_conf > image_conf:
-            final_decision = gene_label
-            trusted_model = "Gene"
-        else:
-            final_decision = image_label if fused_conf >= 0.75 else gene_label
-            trusted_model = "Fused"
+        # Apply Fuzzy Multimodal Classification
+        final_label, final_conf = fuzzy_multimodal_classification(
+            top3_image, 
+            top3_numeric, 
+            dominant_class='melanoma'
+        )
+        
+        # Calculate fused confidence as weighted average of top predictions
+        image_top_conf = top3_image[0][1] if top3_image else 0.0
+        gene_top_conf = top3_numeric[0][1] if top3_numeric else 0.0
+        fused_conf = (0.5 * image_top_conf + 0.5 * gene_top_conf)
 
-        return jsonify({
-            "gene_prediction": gene_label,
-            "gene_confidence": round(gene_conf, 4),
-            "image_prediction": image_label,
-            "image_confidence": round(image_conf, 4),
+        # Prepare response
+        result = {
+            "image_top3": dict(top3_image),
+            "gene_top3": dict(top3_numeric),
+            "final_prediction": final_label,
+            "final_confidence": final_conf,
             "fused_confidence": round(fused_conf, 4),
-            "final_decision": final_decision,
-            "trusted_model": trusted_model
-        })
+            "entropy_score": round(normalized_entropy, 4),
+            "fusion_method": "Fuzzy Logic with Domain Knowledge"
+        }
+
+        # Add warnings based on confidence and entropy
+        warnings = []
+        if final_conf < 0.7:
+            warnings.append("⚠️ Low confidence prediction")
+        if normalized_entropy > 0.9:
+            warnings.append("⚠️ High uncertainty detected")
+        
+        if warnings:
+            result["warnings"] = warnings
+            result["recommendation"] = "Please consult a dermatologist for professional diagnosis."
+
+        return jsonify(result)
 
     except Exception as e:
         logger.exception("Fused prediction error")
         return jsonify({'error': str(e)}), 500
+    try:
+        if 'image' not in request.files or 'gene' not in request.files:
+            return jsonify({'error': 'Both image and gene files are required'}), 400
 
+        # Gene Prediction - Get Top-3
+        gene_file = request.files['gene']
+        df = pd.read_excel(gene_file, header=None)
+        if df.shape[0] > df.shape[1]:
+            df = df.T
+        X = df.values[0].reshape(1, -1)
+
+        if X.shape[1] != scaler.mean_.shape[0]:
+            return jsonify({
+                "error": f"Expected {scaler.mean_.shape[0]} features but got {X.shape[1]}"
+            }), 400
+
+        X_scaled = scaler.transform(X)
+        gene_pred = gene_model.predict(X_scaled, verbose=0)[0]
+        
+        # Get gene labels from encoder
+        gene_labels = encoder.classes_.tolist()
+        top3_numeric = get_top3_predictions(gene_pred, gene_labels)
+
+        # Image Prediction - Get Top-3
+        image = Image.open(request.files['image']).convert("RGB")
+        image_array = preprocess_image(image)
+        image_pred = image_model.predict(image_array, verbose=0)[0]
+        
+        if not np.isclose(np.sum(image_pred), 1.0, atol=1e-3):
+            image_pred = tf.nn.softmax(image_pred).numpy()
+        
+        top3_image = get_top3_predictions(image_pred, class_labels)
+
+        # Calculate entropy for reliability check
+        entropy = -np.sum(image_pred * np.log(image_pred + 1e-10))
+        max_entropy = np.log(len(class_labels))
+        normalized_entropy = entropy / max_entropy
+
+        # Apply Fuzzy Multimodal Classification
+        final_label, final_conf, fused_conf = fuzzy_multimodal_classification(
+            top3_image, 
+            top3_numeric, 
+            dominant_class='melanoma'
+        )
+
+        # Prepare response
+        result = {
+            "image_top3": dict(top3_image),
+            "gene_top3": dict(top3_numeric),
+            "final_prediction": final_label,
+            "final_confidence": final_conf,
+            "fused_confidence": round(fused_conf, 4),
+            "entropy_score": round(normalized_entropy, 4),
+            "fusion_method": "Fuzzy Logic with Domain Knowledge"
+        }
+
+        # Add warnings based on confidence and entropy
+        warnings = []
+        if final_conf < 0.7:
+            warnings.append("⚠️ Low confidence prediction")
+        if normalized_entropy > 0.9:
+            warnings.append("⚠️ High uncertainty detected")
+        
+        if warnings:
+            result["warnings"] = warnings
+            result["recommendation"] = "Please consult a dermatologist for professional diagnosis."
+
+        return jsonify(result)
+
+    except Exception as e:
+        logger.exception("Fused prediction error")
+        return jsonify({'error': str(e)}), 500
 if __name__ == '__main__':
-    logger.info("🚀 Starting Skin Cancer Detection API...")
+    logger.info("🚀 Starting Skin Cancer Detection API with Fuzzy Fusion...")
     app.run(host="0.0.0.0", port=5000, debug=True)
