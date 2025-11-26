@@ -1,2 +1,15 @@
 .\venv310\Scripts\activate
+
+
+cd Skin-Cancer-Detection
+cd Skin-Cancer-ML 
 python app.py
+
+
+cd Skin-Cancer-Detection
+cd Skin-Cancer-Backend
+ npm start
+
+cd Skin-Cancer-Detection
+cd Skin-Cancer-frontend
+npm run dev
