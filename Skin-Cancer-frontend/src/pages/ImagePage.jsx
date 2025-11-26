@@ -8,15 +8,16 @@ const ImagePage = () => {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
 
-
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!file) return toast.error("Please upload an image first!");
+        
+        if (!file) {
+            return toast.error("Please upload an image first!");
+        }
 
         const formData = new FormData();
         formData.append("file", file);
@@ -33,7 +34,7 @@ const ImagePage = () => {
 
             toast.dismiss();
             setResult(response.data);
-            toast.success("Prediction complete!");
+            toast.success("Image prediction complete!");
         } catch (error) {
             toast.dismiss();
             toast.error("Prediction failed. Please try again.");
@@ -43,40 +44,62 @@ const ImagePage = () => {
         }
     };
 
+    const getConfidenceColor = (confidence) => {
+        const conf = parseFloat(confidence);
+        if (conf >= 0.75) return "text-green-600";
+        if (conf >= 0.5) return "text-yellow-600";
+        return "text-red-600";
+    };
+
+    const getConfidenceBadge = (confidence) => {
+        const conf = parseFloat(confidence);
+        if (conf >= 0.75) return "bg-green-100 text-green-800 border-green-300";
+        if (conf >= 0.5) return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        return "bg-red-100 text-red-800 border-red-300";
+    };
+
     return (
         <>
             <Navbar />
-            <section className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200 flex items-center justify-center px-4">
-                <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
-                    <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-                        Image Analysis
+            <section className="min-h-screen bg-gradient-to-br from-green-100 via-white to-emerald-200 flex items-center justify-center px-4 py-8">
+                <div className="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg">
+                    <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
+                        🖼️ Skin Lesion Image Analysis
                     </h1>
-
-                    <h2 className="text-lg text-left font-semibold text-gray-700 mb-2">Let's Start</h2>
-                    <p className="text-left text-sm text-gray-600 mb-6">
-                        Upload your image file (.jpeg or .jpg). Ensure the image is clear and correctly formatted.
+                    <p className="text-center text-gray-600 mb-6">
+                        Advanced computer vision analysis for skin cancer detection
                     </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+                        <p className="text-sm text-green-800">
+                            <strong>How it works:</strong> Upload a clear image of the skin lesion in JPEG or JPG format. 
+                            Our AI model analyzes visual features to identify potential skin cancer types.
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-2">
-                                Upload Image <span className="text-red-500">*</span>
+                                🖼️ Upload Skin Lesion Image (.jpg / .jpeg) <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="file"
-                                accept=".jpeg,.jpg"
-                                onChange={(e) => setFile(e.target.files[0])}
+                                accept=".jpeg,.jpg,.png"
+                                onChange={handleFileChange}
                                 className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 
-                                 file:rounded-lg file:border-0 file:text-sm file:font-semibold 
-                                 file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                                file:rounded-lg file:border-0 file:text-sm file:font-semibold 
+                                file:bg-green-600 file:text-white hover:file:bg-green-700 cursor-pointer"
                             />
+                            {file && (
+                                <p className="text-xs text-green-600 mt-2">✓ {file.name}</p>
+                            )}
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
                             className={`w-full py-3 text-white font-semibold rounded-lg transition 
-                            ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#2563EB] hover:opacity-90"}`}
+                            ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"}`}
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center gap-2">
@@ -100,36 +123,83 @@ const ImagePage = () => {
                                             d="M4 12a8 8 0 018-8v8H4z"
                                         />
                                     </svg>
-                                    Loading...
+                                    Analyzing...
                                 </span>
                             ) : (
-                                "Submit"
+                                "🔬 Analyze Image"
                             )}
                         </button>
                     </form>
 
                     {result && (
-                        <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <h3 className="text-lg font-semibold text-blue-800 mb-2">Prediction:</h3>
-                            <p><strong>Result:</strong> {result.label || result.prediction}</p>
-                            <p>
-                                <strong>Confidence:</strong>{" "}
-                                <span className={`font-semibold ${result.confidence >= 0.8
-                                    ? "text-green-700"
-                                    : result.confidence >= 0.7
-                                        ? "text-yellow-600"
-                                        : "text-red-600"
-                                    }`}>
-                                    {result.confidence}
-                                </span>
-                            </p>
+                        <div className="mt-8 space-y-6 animate-fade-in">
+                            {/* Main Prediction Card */}
+                            <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-lg text-white shadow-lg">
+                                <h3 className="text-xl font-bold mb-2 text-center">🎯 Image Analysis Result</h3>
+                                <h2 className="text-3xl font-bold text-center uppercase tracking-wide">
+                                    {result.label || result.prediction}
+                                </h2>
+                                <div className="flex justify-center items-center gap-4 mt-4">
+                                    <span className={`px-4 py-2 rounded-full font-semibold ${getConfidenceBadge(result.confidence)}`}>
+                                        Confidence: {(parseFloat(result.confidence) * 100).toFixed(1)}%
+                                    </span>
+                                </div>
+                            </div>
 
-                            {result.warnings && result.warnings.map((w, idx) => (
-                                <p key={idx} className="text-yellow-700 mt-2">⚠️ {w}</p>
-                            ))}
-                            {result.recommendation && (
-                                <p className="mt-2 text-red-600 font-semibold">{result.recommendation}</p>
+                            {/* Warnings Section */}
+                            {result.warnings && result.warnings.length > 0 && (
+                                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                    <div className="flex items-start">
+                                        <span className="text-2xl mr-3">⚠️</span>
+                                        <div>
+                                            <h4 className="font-semibold text-yellow-800">Important Notices:</h4>
+                                            <ul className="list-disc list-inside text-yellow-700 text-sm mt-2">
+                                                {result.warnings.map((warning, idx) => (
+                                                    <li key={idx}>{warning}</li>
+                                                ))}
+                                            </ul>
+                                            {result.recommendation && (
+                                                <p className="mt-2 text-sm font-semibold text-yellow-900">
+                                                    📋 {result.recommendation}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             )}
+
+                            {/* Analysis Details */}
+                            <div className="bg-green-50 p-5 rounded-lg border border-green-200">
+                                <h4 className="font-bold text-green-800 mb-3 flex items-center gap-2">
+                                    🖼️ Analysis Summary
+                                </h4>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center bg-white p-3 rounded">
+                                        <span className="text-sm font-medium text-gray-700">
+                                            Predicted Diagnosis
+                                        </span>
+                                        <span className="text-sm font-semibold text-green-600">
+                                            {result.label || result.prediction}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center bg-white p-3 rounded">
+                                        <span className="text-sm font-medium text-gray-700">
+                                            Model Confidence
+                                        </span>
+                                        <span className={`text-sm font-semibold ${getConfidenceColor(result.confidence)}`}>
+                                            {(parseFloat(result.confidence) * 100).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Disclaimer */}
+                            <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                                <p className="text-xs text-red-800">
+                                    <strong>⚕️ Medical Disclaimer:</strong> This is an AI-assisted diagnostic tool and should NOT replace professional medical advice.
+                                    Always consult with a qualified dermatologist or healthcare provider for proper diagnosis and treatment.
+                                </p>
+                            </div>
                         </div>
                     )}
 
